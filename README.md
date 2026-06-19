@@ -1,5 +1,46 @@
 # Futsal Field Reservation API
 
+REST API Backend untuk Sistem Reservasi Lapangan Futsal, dibangun menggunakan Node.js, Express, MySQL 8, dan Sequelize ORM.
+
+## Daftar API Endpoints
+
+### 🔐 1. Auth (Otentikasi)
+*Semua endpoint auth bersifat **Public**.*
+- `POST /api/v1/auth/register` : Mendaftarkan akun baru.
+- `POST /api/v1/auth/login` : Login untuk mendapatkan token JWT.
+- `GET /api/v1/auth/profile` : Melihat profil user yang sedang login (Butuh Token).
+
+### 👥 2. Users
+*Hanya dapat diakses oleh **ADMIN**.*
+- `GET /api/v1/users` : Melihat daftar semua user.
+- `GET /api/v1/users/:id` : Melihat detail spesifik seorang user.
+
+### ⚽ 3. Fields (Lapangan)
+*Akses campuran antara **Public** dan **ADMIN**.*
+- `GET /api/v1/fields` : Melihat semua lapangan yang tersedia (Public).
+- `GET /api/v1/fields/:id` : Melihat detail 1 lapangan (Public).
+- `POST /api/v1/fields` : Menambahkan lapangan baru (Admin).
+- `PUT /api/v1/fields/:id` : Mengedit data lapangan (Admin).
+- `DELETE /api/v1/fields/:id` : Menghapus lapangan (Admin).
+
+### 📅 4. Bookings (Pemesanan)
+*Dibatasi berdasarkan kepemilikan dan Role.*
+- `POST /api/v1/bookings` : Membuat pemesanan baru (Customer).
+- `GET /api/v1/bookings/my` : Melihat history pemesanan milik sendiri (Customer).
+- `GET /api/v1/bookings/:id` : Melihat detail sebuah pemesanan (Customer pemilik & Admin).
+- `GET /api/v1/bookings` : Melihat semua pemesanan dari seluruh user (Admin).
+- `PATCH /api/v1/bookings/:id/approve` : Menyetujui pemesanan (Admin).
+- `PATCH /api/v1/bookings/:id/reject` : Menolak pemesanan (Admin).
+
+### 💳 5. Payments (Pembayaran)
+*Akses campuran.*
+- `POST /api/v1/payments` : Mengunggah bukti pembayaran untuk suatu booking (Customer).
+- `GET /api/v1/payments` : Melihat semua pembayaran (Admin).
+- `PATCH /api/v1/payments/:id/verify` : Memverifikasi bukti pembayaran (Admin).
+- `PATCH /api/v1/payments/:id/reject` : Menolak bukti pembayaran (Admin).
+
+---
+
 ## Deployment Guide (VPS Ubuntu + Nginx + PM2)
 
 ### 1. Persiapan Server
