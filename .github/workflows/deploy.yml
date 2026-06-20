@@ -2,9 +2,6 @@ name: Deploy to cPanel
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
 
 jobs:
   ftp-deploy:
