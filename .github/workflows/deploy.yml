@@ -5,27 +5,23 @@ on:
 
 jobs:
   ftp-deploy:
-    name: 🎉 Deploy via FTP
+    name: Deploy via FTP
     runs-on: ubuntu-latest
     steps:
-    - name: 🚚 Get latest code
+    - name: Get latest code
       uses: actions/checkout@v4
     
-    - name: 📂 Sync files to cPanel
+    - name: Sync files to cPanel
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
       with:
         server: ${{ secrets.FTP_SERVER }}
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
-        # Jangan hapus file .env di server jika sudah ada
         dangerous-clean-slate: false
-        # Kecualikan file yang tidak perlu diupload ke server
         exclude: |
           **/.git*
           **/.git*/**
           **/node_modules/**
-          Dockerfile
-          docker-compose.yml
           .github/**
           dbdiagram.dbml
           tests/**
