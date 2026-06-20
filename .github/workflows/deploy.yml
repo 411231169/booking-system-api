@@ -1,44 +1,35 @@
-name: Deploy to cPanel (Docker)
+name: Deploy to cPanel
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
 
 jobs:
-  build-and-deploy:
+  ftp-deploy:
+    name: 🎉 Deploy via FTP
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Build and Push Docker Image
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/futsal-api:latest
-
-      - name: Deploy to cPanel Server via SSH
-        uses: appleboy/ssh-action@v0.1.10
-        with:
-          host: ${{ secrets.CPANEL_HOST }}
-          username: ${{ secrets.CPANEL_USERNAME }}
-          key: ${{ secrets.CPANEL_SSH_KEY }}
-          passphrase: ${{ secrets.CPANEL_PASSPHRASE }}
-          port: ${{ secrets.CPANEL_PORT }}
-          script: |
-            # Masuk ke direktori project di cPanel (sesuaikan path-nya)
-            cd /home/${{ secrets.CPANEL_USERNAME }}/futsal-api
-            
-            # Tarik image terbaru dari Docker Hub
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/futsal-api:latest
-            
-            # Restart container menggunakan docker-compose
-            docker-compose down
-            docker-compose up -d
+    - name: 🚚 Get latest code
+      uses: actions/checkout@v4
+    
+    - name: 📂 Sync files to cPanel
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      with:
+        server: ${{ secrets.FTP_SERVER }}
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        # Jangan hapus file .env di server jika sudah ada
+        dangerous-clean-slate: false
+        # Kecualikan file yang tidak perlu diupload ke server
+        exclude: |
+          **/.git*
+          **/.git*/**
+          **/node_modules/**
+          Dockerfile
+          docker-compose.yml
+          .github/**
+          dbdiagram.dbml
+          tests/**
+          README.md
