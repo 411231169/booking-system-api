@@ -1,9 +1,7 @@
 name: Deploy to cPanel (Docker)
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
@@ -31,7 +29,8 @@ jobs:
         with:
           host: ${{ secrets.CPANEL_HOST }}
           username: ${{ secrets.CPANEL_USERNAME }}
-          password: ${{ secrets.CPANEL_PASSWORD }} # Atau gunakan key: ${{ secrets.CPANEL_SSH_KEY }}
+          key: ${{ secrets.CPANEL_SSH_KEY }}
+          passphrase: ${{ secrets.CPANEL_PASSPHRASE }}
           port: ${{ secrets.CPANEL_PORT }}
           script: |
             # Masuk ke direktori project di cPanel (sesuaikan path-nya)
