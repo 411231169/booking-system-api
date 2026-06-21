@@ -3,26 +3,45 @@ name: Deploy to cPanel
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
-  ftp-deploy:
-    name: Deploy via FTP
+  release:
+    name: Semantic Release
     runs-on: ubuntu-latest
     steps:
-    - name: Get latest code
-      uses: actions/checkout@v4
-    
-    - name: Sync files to cPanel
-      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-      with:
-        server: ${{ secrets.FTP_SERVER }}
-        username: ${{ secrets.FTP_USERNAME }}
-        password: ${{ secrets.FTP_PASSWORD }}
-        dangerous-clean-slate: false
-        exclude: |
-          **/.git*
-          **/.git*/**
-          **/node_modules/**
-          .github/**
-          dbdiagram.dbml
-          tests/**
-          README.md
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24.15"
+      - name: Run Semantic Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx semantic-release
+
+  deploy:
+    name: Deploy via FTP
+    runs-on: ubuntu-latest
+    needs: release
+    steps:
+      - name: Get latest code
+        uses: actions/checkout@v4
+      
+      - name: Sync files to cPanel
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          dangerous-clean-slate: false
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            .github/**
+            dbdiagram.dbml
+            tests/**
+            README.md
