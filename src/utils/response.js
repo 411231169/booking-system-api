@@ -1,6 +1,5 @@
 const { StatusCodes } = require('http-status-codes');
 
-// Generate APP-20001, APP-40001, etc.
 const generateAppCode = (statusCode) => `APP-${statusCode}01`;
 
 const sendSuccessSingle = (res, statusCode = StatusCodes.OK, message = 'Success', detail = {}) => {

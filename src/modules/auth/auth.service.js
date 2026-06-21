@@ -1,3 +1,4 @@
+const { ResponseMessage } = require('../../utils/responseEnums');
 const { StatusCodes } = require('http-status-codes');
 const bcrypt = require('bcrypt');
 const authRepository = require('./auth.repository');
