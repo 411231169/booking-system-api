@@ -41,6 +41,16 @@ REST API Backend untuk Sistem Reservasi Lapangan Futsal, dibangun menggunakan No
 
 ---
 
+## Akun Superadmin Default
+Untuk mempermudah *development* dan *testing*, sistem ini dilengkapi dengan *seeder* admin. Anda bisa menggunakan akun berikut untuk mengakses seluruh *endpoint* yang berlabel **Admin**:
+
+- **Email**: `admin@himup.id`
+- **Password**: `admin123`
+
+*(Jangan lupa jalankan perintah `npx sequelize-cli db:seed:all` terlebih dahulu di lokal untuk memasukkan data admin ini ke dalam database).*
+
+---
+
 ## Deployment Guide (cPanel Shared Hosting + CI/CD)
 
 Aplikasi ini telah dikonfigurasi untuk menggunakan **Continuous Deployment (CI/CD)** via GitHub Actions langsung ke Shared Hosting (cPanel).
