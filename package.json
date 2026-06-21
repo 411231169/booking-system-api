@@ -2,6 +2,10 @@
   "name": "fullstack-api",
   "version": "1.0.0",
   "description": "Node.js API server untuk fullstack project",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/411231169/booking-system-api.git"
+  },
   "main": "src/index.js",
   "scripts": {
     "start": "node server.js",
