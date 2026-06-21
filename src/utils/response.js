@@ -1,11 +1,10 @@
 const { StatusCodes } = require('http-status-codes');
+const { ResponseCode } = require('./responseEnums');
 
-const generateAppCode = (statusCode) => `APP-${statusCode}01`;
-
-const sendSuccessSingle = (res, statusCode = StatusCodes.OK, message = 'Success', detail = {}) => {
+const sendSuccessSingle = (res, statusCode = StatusCodes.OK, responseCode = ResponseCode.SUCCESS, detail = {}) => {
   return res.status(statusCode).json({
-    response_code: generateAppCode(statusCode),
-    message,
+    response_code: responseCode.code,
+    message: responseCode.message,
     data: {
       detail
     },
@@ -13,10 +12,10 @@ const sendSuccessSingle = (res, statusCode = StatusCodes.OK, message = 'Success'
   });
 };
 
-const sendSuccessList = (res, statusCode = StatusCodes.OK, message = 'Success', list = [], meta = null) => {
+const sendSuccessList = (res, statusCode = StatusCodes.OK, responseCode = ResponseCode.SUCCESS, list = [], meta = null) => {
   return res.status(statusCode).json({
-    response_code: generateAppCode(statusCode),
-    message,
+    response_code: responseCode.code,
+    message: responseCode.message,
     data: {
       list
     },
@@ -24,11 +23,10 @@ const sendSuccessList = (res, statusCode = StatusCodes.OK, message = 'Success', 
   });
 };
 
-const sendValidationError = (res, message = 'Bad Request', errors = []) => {
-  const statusCode = StatusCodes.BAD_REQUEST;
-  return res.status(statusCode).json({
-    response_code: generateAppCode(statusCode),
-    message,
+const sendValidationError = (res, responseCode = ResponseCode.VALIDATION_ERROR, errors = []) => {
+  return res.status(StatusCodes.BAD_REQUEST).json({
+    response_code: responseCode.code,
+    message: responseCode.message,
     data: {
       errors
     },
@@ -36,10 +34,10 @@ const sendValidationError = (res, message = 'Bad Request', errors = []) => {
   });
 };
 
-const sendGeneralError = (res, statusCode = StatusCodes.INTERNAL_SERVER_ERROR, message = 'Error message', errors = []) => {
+const sendGeneralError = (res, statusCode = StatusCodes.INTERNAL_SERVER_ERROR, responseCode = ResponseCode.INTERNAL_SERVER_ERROR, errors = []) => {
   return res.status(statusCode).json({
-    response_code: generateAppCode(statusCode),
-    message,
+    response_code: responseCode.code,
+    message: responseCode.message,
     data: {
       errors
     },

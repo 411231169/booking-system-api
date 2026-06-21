@@ -1,67 +1,73 @@
-const ResponseCode = {
-  SUCCESS: 'SUCCESS',
-  CREATED: 'CREATED',
-  BAD_REQUEST: 'BAD_REQUEST',
-  UNAUTHORIZED: 'UNAUTHORIZED',
-  FORBIDDEN: 'FORBIDDEN',
-  NOT_FOUND: 'NOT_FOUND',
-  CONFLICT: 'CONFLICT',
-  INTERNAL_SERVER_ERROR: 'INTERNAL_SERVER_ERROR'
-};
+class ResponseCode {
+  constructor(code, message) {
+    this.code = code;
+    this.message = message;
+  }
 
-const ResponseMessage = {
-  // Auth
-  REGISTER_SUCCESS: ResponseMessage.REGISTER_SUCCESS,
-  LOGIN_SUCCESS: ResponseMessage.LOGIN_SUCCESS,
-  PROFILE_RETRIEVED: ResponseMessage.PROFILE_RETRIEVED,
-  EMAIL_IN_USE: ResponseMessage.EMAIL_IN_USE,
-  INVALID_CREDENTIALS: ResponseMessage.INVALID_CREDENTIALS,
+  // GLOBAL SUCCESS (200)
+  static SUCCESS             = new ResponseCode('APP-20001', 'Success');
   
-  // User
-  USERS_RETRIEVED: ResponseMessage.USERS_RETRIEVED,
-  USER_RETRIEVED: ResponseMessage.USER_RETRIEVED,
-  USER_NOT_FOUND: ResponseMessage.USER_NOT_FOUND,
+  // GLOBAL CLIENT ERRORS (400)
+  static VALIDATION_ERROR    = new ResponseCode('APP-40001', 'Harap periksa kembali data yang Anda masukkan');
+  
+  // GLOBAL UNAUTHORIZED (401)
+  static UNAUTHORIZED        = new ResponseCode('APP-40101', 'Anda tidak memiliki izin');
+  static TOKEN_INVALID       = new ResponseCode('APP-40102', 'Token tidak valid atau sudah kadaluarsa');
+  static TOKEN_USER_DELETED  = new ResponseCode('APP-40103', 'Pengguna untuk token ini sudah tidak ada');
+  
+  // GLOBAL FORBIDDEN (403)
+  static FORBIDDEN           = new ResponseCode('APP-40301', 'Akses ditolak');
 
-  // Booking
-  BOOKING_CREATED: ResponseMessage.BOOKING_CREATED,
-  MY_BOOKINGS_RETRIEVED: ResponseMessage.MY_BOOKINGS_RETRIEVED,
-  ALL_BOOKINGS_RETRIEVED: ResponseMessage.ALL_BOOKINGS_RETRIEVED,
-  BOOKING_RETRIEVED: ResponseMessage.BOOKING_RETRIEVED,
-  BOOKING_APPROVED: ResponseMessage.BOOKING_APPROVED,
-  BOOKING_REJECTED: ResponseMessage.BOOKING_REJECTED,
-  BOOKING_NOT_FOUND: ResponseMessage.BOOKING_NOT_FOUND,
-  NO_PERMISSION_BOOKING: ResponseMessage.NO_PERMISSION_BOOKING,
-  CONFLICT_BOOKING: ResponseMessage.CONFLICT_BOOKING,
-  CONFLICT_APPROVE: ResponseMessage.CONFLICT_APPROVE,
-  END_TIME_ERROR: ResponseMessage.END_TIME_ERROR,
+  // GLOBAL NOT FOUND (404)
+  static NOT_FOUND_ENDPOINT  = new ResponseCode('APP-40401', 'Endpoint tidak ditemukan');
 
-  // Field
-  FIELDS_RETRIEVED: ResponseMessage.FIELDS_RETRIEVED,
-  FIELD_RETRIEVED: ResponseMessage.FIELD_RETRIEVED,
-  FIELD_CREATED: ResponseMessage.FIELD_CREATED,
-  FIELD_UPDATED: ResponseMessage.FIELD_UPDATED,
-  FIELD_DELETED: ResponseMessage.FIELD_DELETED,
-  FIELD_NOT_FOUND: ResponseMessage.FIELD_NOT_FOUND,
-  FIELD_NOT_ACTIVE: ResponseMessage.FIELD_NOT_ACTIVE,
+  // GLOBAL SERVER ERRORS (500)
+  static INTERNAL_SERVER_ERROR = new ResponseCode('APP-50001', 'Terjadi kesalahan internal pada server');
 
-  // Payment
-  PAYMENT_SUBMITTED: ResponseMessage.PAYMENT_SUBMITTED,
-  PAYMENTS_RETRIEVED: ResponseMessage.PAYMENTS_RETRIEVED,
-  PAYMENT_VERIFIED: ResponseMessage.PAYMENT_VERIFIED,
-  PAYMENT_REJECTED: ResponseMessage.PAYMENT_REJECTED,
-  PAYMENT_NOT_FOUND: ResponseMessage.PAYMENT_NOT_FOUND,
-  PAY_OWN_BOOKING: ResponseMessage.PAY_OWN_BOOKING,
-  PAYMENT_EXISTS: ResponseMessage.PAYMENT_EXISTS,
+  // AUTH MODULE
+  static REGISTER_SUCCESS    = new ResponseCode('APP-20101', 'Registrasi berhasil');
+  static LOGIN_SUCCESS       = new ResponseCode('APP-20002', 'Login berhasil');
+  static PROFILE_RETRIEVED   = new ResponseCode('APP-20003', 'Profil berhasil diambil');
+  static EMAIL_IN_USE        = new ResponseCode('APP-40002', 'Email sudah terdaftar');
+  static INVALID_CREDENTIALS = new ResponseCode('APP-40104', 'Email atau Password salah');
 
-  // Middleware / Generic
-  UNAUTHORIZED: ResponseMessage.UNAUTHORIZED,
-  TOKEN_USER_DELETED: ResponseMessage.TOKEN_USER_DELETED,
-  TOKEN_INVALID: ResponseMessage.TOKEN_INVALID,
-  FORBIDDEN: ResponseMessage.FORBIDDEN,
-  NOT_FOUND_ENDPOINT: ResponseMessage.NOT_FOUND_ENDPOINT,
-};
+  // USER MODULE
+  static USERS_RETRIEVED     = new ResponseCode('APP-20004', 'Daftar pengguna berhasil diambil');
+  static USER_RETRIEVED      = new ResponseCode('APP-20005', 'Data pengguna berhasil diambil');
+  static USER_NOT_FOUND      = new ResponseCode('APP-40402', 'Pengguna tidak ditemukan');
+
+  // BOOKING MODULE
+  static BOOKING_CREATED         = new ResponseCode('APP-20102', 'Pemesanan berhasil dibuat');
+  static MY_BOOKINGS_RETRIEVED   = new ResponseCode('APP-20006', 'Daftar pemesanan saya berhasil diambil');
+  static ALL_BOOKINGS_RETRIEVED  = new ResponseCode('APP-20007', 'Seluruh daftar pemesanan berhasil diambil');
+  static BOOKING_RETRIEVED       = new ResponseCode('APP-20008', 'Data pemesanan berhasil diambil');
+  static BOOKING_APPROVED        = new ResponseCode('APP-20009', 'Pemesanan disetujui');
+  static BOOKING_REJECTED        = new ResponseCode('APP-20010', 'Pemesanan ditolak');
+  static BOOKING_NOT_FOUND       = new ResponseCode('APP-40403', 'Pemesanan tidak ditemukan');
+  static NO_PERMISSION_BOOKING   = new ResponseCode('APP-40302', 'Anda tidak memiliki hak akses untuk pemesanan ini');
+  static CONFLICT_BOOKING        = new ResponseCode('APP-40901', 'Jadwal lapangan bentrok dengan pemesanan lain');
+  static CONFLICT_APPROVE        = new ResponseCode('APP-40902', 'Status pemesanan sudah tidak dapat diubah');
+  static END_TIME_ERROR          = new ResponseCode('APP-40003', 'Waktu selesai harus lebih besar dari waktu mulai');
+
+  // FIELD MODULE
+  static FIELDS_RETRIEVED    = new ResponseCode('APP-20011', 'Daftar lapangan berhasil diambil');
+  static FIELD_RETRIEVED     = new ResponseCode('APP-20012', 'Data lapangan berhasil diambil');
+  static FIELD_CREATED       = new ResponseCode('APP-20103', 'Lapangan berhasil ditambahkan');
+  static FIELD_UPDATED       = new ResponseCode('APP-20013', 'Lapangan berhasil diupdate');
+  static FIELD_DELETED       = new ResponseCode('APP-20014', 'Lapangan berhasil dihapus');
+  static FIELD_NOT_FOUND     = new ResponseCode('APP-40404', 'Lapangan tidak ditemukan');
+  static FIELD_NOT_ACTIVE    = new ResponseCode('APP-40004', 'Lapangan sedang tidak aktif');
+
+  // PAYMENT MODULE
+  static PAYMENT_SUBMITTED   = new ResponseCode('APP-20104', 'Pembayaran berhasil disubmit');
+  static PAYMENTS_RETRIEVED  = new ResponseCode('APP-20015', 'Daftar pembayaran berhasil diambil');
+  static PAYMENT_VERIFIED    = new ResponseCode('APP-20016', 'Pembayaran berhasil diverifikasi');
+  static PAYMENT_REJECTED    = new ResponseCode('APP-20017', 'Pembayaran ditolak');
+  static PAYMENT_NOT_FOUND   = new ResponseCode('APP-40405', 'Pembayaran tidak ditemukan');
+  static PAY_OWN_BOOKING     = new ResponseCode('APP-40303', 'Anda tidak dapat memverifikasi pembayaran Anda sendiri');
+  static PAYMENT_EXISTS      = new ResponseCode('APP-40005', 'Pembayaran untuk pemesanan ini sudah ada');
+}
 
 module.exports = {
-  ResponseCode,
-  ResponseMessage
+  ResponseCode
 };
