@@ -1,11 +1,12 @@
+const { StatusCodes } = require('http-status-codes');
 const fieldService = require('./field.service');
-const { sendSuccess } = require('../../utils/response');
+const { sendSuccessSingle, sendSuccessList } = require('../../utils/response');
 
 class FieldController {
   async getAllFields(req, res, next) {
     try {
       const data = await fieldService.getAllFields(req.query);
-      return sendSuccess(res, 200, 'Fields retrieved successfully', data);
+      return sendSuccessList(res, StatusCodes.OK, ResponseMessage.FIELDS_RETRIEVED, data, null);
     } catch (error) {
       next(error);
     }
@@ -14,7 +15,7 @@ class FieldController {
   async getFieldById(req, res, next) {
     try {
       const data = await fieldService.getFieldById(req.params.id);
-      return sendSuccess(res, 200, 'Field retrieved successfully', data);
+      return sendSuccessSingle(res, StatusCodes.OK, ResponseMessage.FIELD_RETRIEVED, data);
     } catch (error) {
       next(error);
     }
@@ -23,7 +24,7 @@ class FieldController {
   async createField(req, res, next) {
     try {
       const data = await fieldService.createField(req.body);
-      return sendSuccess(res, 201, 'Field created successfully', data);
+      return sendSuccessSingle(res, StatusCodes.CREATED, ResponseMessage.FIELD_CREATED, data);
     } catch (error) {
       next(error);
     }
@@ -32,7 +33,7 @@ class FieldController {
   async updateField(req, res, next) {
     try {
       const data = await fieldService.updateField(req.params.id, req.body);
-      return sendSuccess(res, 200, 'Field updated successfully', data);
+      return sendSuccessSingle(res, StatusCodes.OK, ResponseMessage.FIELD_UPDATED, data);
     } catch (error) {
       next(error);
     }
@@ -41,7 +42,7 @@ class FieldController {
   async deleteField(req, res, next) {
     try {
       await fieldService.deleteField(req.params.id);
-      return sendSuccess(res, 200, 'Field deleted successfully');
+      return sendSuccessSingle(res, StatusCodes.OK, ResponseMessage.FIELD_DELETED);
     } catch (error) {
       next(error);
     }

@@ -1,3 +1,4 @@
+const { StatusCodes } = require('http-status-codes');
 const { Payment, Booking, User } = require('../../models');
 const { getPagination, getPagingData } = require('../../utils/pagination');
 const { AppError } = require('../../middlewares/error.middleware');
@@ -39,7 +40,7 @@ class PaymentService {
     });
 
     if (!payment) {
-      throw new AppError('Payment not found', 404);
+      throw new AppError(ResponseMessage.PAYMENT_NOT_FOUND, StatusCodes.NOT_FOUND);
     }
     return payment;
   }
@@ -50,16 +51,16 @@ class PaymentService {
     // Verify booking
     const booking = await Booking.findByPk(booking_id);
     if (!booking) {
-      throw new AppError('Booking not found', 404);
+      throw new AppError(ResponseMessage.BOOKING_NOT_FOUND, StatusCodes.NOT_FOUND);
     }
     if (booking.user_id !== userId) {
-      throw new AppError('You can only pay for your own booking', 403);
+      throw new AppError(ResponseMessage.PAY_OWN_BOOKING, StatusCodes.FORBIDDEN);
     }
 
     // Check if payment already exists
     const existingPayment = await Payment.findOne({ where: { booking_id } });
     if (existingPayment) {
-      throw new AppError('Payment for this booking already exists', 400);
+      throw new AppError(ResponseMessage.PAYMENT_EXISTS, StatusCodes.BAD_REQUEST);
     }
 
     const payment = await Payment.create({

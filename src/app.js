@@ -1,10 +1,9 @@
+const { StatusCodes } = require('http-status-codes');
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const compression = require('compression');
-const swaggerUi = require('swagger-ui-express');
-const YAML = require('yamljs');
 const path = require('path');
 
 const env = require('./config/env');
@@ -41,16 +40,13 @@ app.use(morgan(morganFormat, {
   stream: { write: (message) => logger.http(message.trim()) }
 }));
 
-// Swagger documentation
-const swaggerDocument = YAML.load(path.join(__dirname, '../swagger.yaml'));
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // API routes
-app.use('/api/v1', routes);
+app.use('/api', routes);
 
 // Handle unknown API requests
 app.use((req, res, next) => {
-  next(new AppError(`Not Found - ${req.originalUrl}`, 404));
+  next(new AppError(`Not Found - ${req.originalUrl}`, StatusCodes.NOT_FOUND));
 });
 
 // Centralized error handling

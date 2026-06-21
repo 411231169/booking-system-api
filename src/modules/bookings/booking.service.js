@@ -1,3 +1,4 @@
+const { StatusCodes } = require('http-status-codes');
 const { Booking, Field, User } = require('../../models');
 const { getPagination, getPagingData } = require('../../utils/pagination');
 const { AppError } = require('../../middlewares/error.middleware');
@@ -40,11 +41,11 @@ class BookingService {
     });
 
     if (!booking) {
-      throw new AppError('Booking not found', 404);
+      throw new AppError(ResponseMessage.BOOKING_NOT_FOUND, StatusCodes.NOT_FOUND);
     }
 
     if (role === 'CUSTOMER' && booking.user_id !== userId) {
-      throw new AppError('You do not have permission to view this booking', 403);
+      throw new AppError(ResponseMessage.NO_PERMISSION_BOOKING, StatusCodes.FORBIDDEN);
     }
 
     return booking;
@@ -56,10 +57,10 @@ class BookingService {
     // Check if field exists and is active
     const field = await Field.findByPk(field_id);
     if (!field) {
-      throw new AppError('Field not found', 404);
+      throw new AppError(ResponseMessage.FIELD_NOT_FOUND, StatusCodes.NOT_FOUND);
     }
     if (!field.is_active) {
-      throw new AppError('Field is not active for booking', 400);
+      throw new AppError(ResponseMessage.FIELD_NOT_ACTIVE, StatusCodes.BAD_REQUEST);
     }
 
     // Calculate duration in hours
@@ -68,13 +69,13 @@ class BookingService {
     const duration = (end - start) / (1000 * 60 * 60);
 
     if (duration <= 0) {
-      throw new AppError('End time must be after start time', 400);
+      throw new AppError(ResponseMessage.END_TIME_ERROR, StatusCodes.BAD_REQUEST);
     }
 
     // Check for double booking conflict
     const isConflict = await checkBookingConflict(field_id, booking_date, start_time, end_time);
     if (isConflict) {
-      throw new AppError('Conflict Booking: The field is already booked for the selected time', 409);
+      throw new AppError(ResponseMessage.CONFLICT_BOOKING, StatusCodes.CONFLICT);
     }
 
     const total_price = field.price_per_hour * duration;
@@ -107,7 +108,7 @@ class BookingService {
         booking.id
       );
       if (isConflict) {
-        throw new AppError('Conflict Booking: Cannot approve as another booking overlaps', 409);
+        throw new AppError(ResponseMessage.CONFLICT_APPROVE, StatusCodes.CONFLICT);
       }
     }
 

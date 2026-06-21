@@ -1,11 +1,12 @@
+const { StatusCodes } = require('http-status-codes');
 const bookingService = require('./booking.service');
-const { sendSuccess } = require('../../utils/response');
+const { sendSuccessSingle, sendSuccessList } = require('../../utils/response');
 
 class BookingController {
   async createBooking(req, res, next) {
     try {
       const data = await bookingService.createBooking(req.user.id, req.body);
-      return sendSuccess(res, 201, 'Booking created successfully', data);
+      return sendSuccessSingle(res, StatusCodes.CREATED, ResponseMessage.BOOKING_CREATED, data);
     } catch (error) {
       next(error);
     }
@@ -14,7 +15,7 @@ class BookingController {
   async getMyBookings(req, res, next) {
     try {
       const data = await bookingService.getAllBookings(req.query, req.user.id);
-      return sendSuccess(res, 200, 'My bookings retrieved successfully', data);
+      return sendSuccessList(res, StatusCodes.OK, ResponseMessage.MY_BOOKINGS_RETRIEVED, data, null);
     } catch (error) {
       next(error);
     }
@@ -23,7 +24,7 @@ class BookingController {
   async getAllBookings(req, res, next) {
     try {
       const data = await bookingService.getAllBookings(req.query);
-      return sendSuccess(res, 200, 'All bookings retrieved successfully', data);
+      return sendSuccessList(res, StatusCodes.OK, ResponseMessage.ALL_BOOKINGS_RETRIEVED, data, null);
     } catch (error) {
       next(error);
     }
@@ -32,7 +33,7 @@ class BookingController {
   async getBookingById(req, res, next) {
     try {
       const data = await bookingService.getBookingById(req.params.id, req.user.id, req.user.role);
-      return sendSuccess(res, 200, 'Booking retrieved successfully', data);
+      return sendSuccessSingle(res, StatusCodes.OK, ResponseMessage.BOOKING_RETRIEVED, data);
     } catch (error) {
       next(error);
     }
@@ -41,7 +42,7 @@ class BookingController {
   async approveBooking(req, res, next) {
     try {
       const data = await bookingService.updateBookingStatus(req.params.id, 'APPROVED');
-      return sendSuccess(res, 200, 'Booking approved successfully', data);
+      return sendSuccessSingle(res, StatusCodes.OK, ResponseMessage.BOOKING_APPROVED, data);
     } catch (error) {
       next(error);
     }
@@ -50,7 +51,7 @@ class BookingController {
   async rejectBooking(req, res, next) {
     try {
       const data = await bookingService.updateBookingStatus(req.params.id, 'REJECTED');
-      return sendSuccess(res, 200, 'Booking rejected successfully', data);
+      return sendSuccessSingle(res, StatusCodes.OK, ResponseMessage.BOOKING_REJECTED, data);
     } catch (error) {
       next(error);
     }

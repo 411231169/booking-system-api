@@ -1,3 +1,4 @@
+const { StatusCodes } = require('http-status-codes');
 const { Field } = require('../../models');
 const { getPagination, getPagingData } = require('../../utils/pagination');
 const { AppError } = require('../../middlewares/error.middleware');
@@ -29,7 +30,7 @@ class FieldService {
   async getFieldById(id) {
     const field = await Field.findByPk(id);
     if (!field) {
-      throw new AppError('Field not found', 404);
+      throw new AppError(ResponseMessage.FIELD_NOT_FOUND, StatusCodes.NOT_FOUND);
     }
     return field;
   }

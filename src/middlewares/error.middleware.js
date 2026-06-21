@@ -1,5 +1,6 @@
+const { StatusCodes } = require('http-status-codes');
 const logger = require('../config/logger');
-const { sendError } = require('../utils/response');
+const { sendGeneralError, sendValidationError } = require('../utils/response');
 
 class AppError extends Error {
   constructor(message, statusCode) {
@@ -13,7 +14,7 @@ class AppError extends Error {
 const errorMiddleware = (err, req, res, next) => {
   let { statusCode, message } = err;
   
-  if (!statusCode) statusCode = 500;
+  if (!statusCode) statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
   
   if (process.env.NODE_ENV !== 'test') {
     logger.error(err);
@@ -21,21 +22,29 @@ const errorMiddleware = (err, req, res, next) => {
 
   // Handle Specific Errors
   if (err.name === 'SequelizeValidationError' || err.name === 'SequelizeUniqueConstraintError') {
-    statusCode = 400;
-    message = err.errors.map(e => e.message).join(', ');
+    const formatErrors = err.errors.map(e => ({
+      field: e.path,
+      message: e.message
+    }));
+    return sendValidationError(res, 'Validation Error', formatErrors);
   } else if (err.name === 'JsonWebTokenError') {
-    statusCode = 401;
+    statusCode = StatusCodes.UNAUTHORIZED;
     message = 'Invalid token';
   } else if (err.name === 'TokenExpiredError') {
-    statusCode = 401;
+    statusCode = StatusCodes.UNAUTHORIZED;
     message = 'Token expired';
   }
 
-  res.status(statusCode).json({
-    success: false,
-    message: statusCode === 500 && process.env.NODE_ENV === 'production' ? 'Internal Server Error' : message,
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
-  });
+  const finalMessage = statusCode === StatusCodes.INTERNAL_SERVER_ERROR && process.env.NODE_ENV === 'production' ? 'Internal Server Error' : (message || 'Internal Server Error');
+  const errorsArray = [];
+  
+  // Optional: Send stack trace in dev mode as an error detail
+  if (process.env.NODE_ENV === 'development' && err.stack) {
+    // We could push stack trace to errors array, but template expects field/message
+    // errorsArray.push({ field: 'stack', message: err.stack });
+  }
+
+  return sendGeneralError(res, statusCode, finalMessage, errorsArray);
 };
 
 module.exports = {

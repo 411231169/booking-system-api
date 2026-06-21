@@ -1,3 +1,4 @@
+const { StatusCodes } = require('http-status-codes');
 const { verifyToken } = require('../utils/jwt');
 const { AppError } = require('./error.middleware');
 const { User } = require('../models');
@@ -11,7 +12,7 @@ const protect = async (req, res, next) => {
     }
     
     if (!token) {
-      return next(new AppError('You are not logged in! Please log in to get access.', 401));
+      return next(new AppError(ResponseMessage.UNAUTHORIZED, StatusCodes.UNAUTHORIZED));
     }
     
     // Verify token
@@ -20,14 +21,14 @@ const protect = async (req, res, next) => {
     // Check if user still exists
     const currentUser = await User.findByPk(decoded.id);
     if (!currentUser) {
-      return next(new AppError('The user belonging to this token does no longer exist.', 401));
+      return next(new AppError(ResponseMessage.TOKEN_USER_DELETED, StatusCodes.UNAUTHORIZED));
     }
     
     // Grant access to protected route
     req.user = currentUser;
     next();
   } catch (error) {
-    next(new AppError('Authentication failed, invalid or expired token', 401));
+    next(new AppError(ResponseMessage.TOKEN_INVALID, StatusCodes.UNAUTHORIZED));
   }
 };
 
