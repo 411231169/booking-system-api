@@ -1,3 +1,4 @@
+const { ResponseCode } = require('../../utils/responseEnums');
 const { StatusCodes } = require('http-status-codes');
 const { User } = require('../../models');
 const { getPagination, getPagingData } = require('../../utils/pagination');
@@ -33,7 +34,7 @@ class UserService {
     });
     
     if (!user) {
-      throw new AppError(ResponseMessage.USER_NOT_FOUND, StatusCodes.NOT_FOUND);
+      throw new AppError(ResponseCode.USER_NOT_FOUND, StatusCodes.NOT_FOUND);
     }
     
     return user;

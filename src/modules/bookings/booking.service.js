@@ -1,3 +1,4 @@
+const { ResponseCode } = require('../../utils/responseEnums');
 const { StatusCodes } = require('http-status-codes');
 const { Booking, Field, User } = require('../../models');
 const { getPagination, getPagingData } = require('../../utils/pagination');
@@ -41,11 +42,11 @@ class BookingService {
     });
 
     if (!booking) {
-      throw new AppError(ResponseMessage.BOOKING_NOT_FOUND, StatusCodes.NOT_FOUND);
+      throw new AppError(ResponseCode.BOOKING_NOT_FOUND, StatusCodes.NOT_FOUND);
     }
 
     if (role === 'CUSTOMER' && booking.user_id !== userId) {
-      throw new AppError(ResponseMessage.NO_PERMISSION_BOOKING, StatusCodes.FORBIDDEN);
+      throw new AppError(ResponseCode.NO_PERMISSION_BOOKING, StatusCodes.FORBIDDEN);
     }
 
     return booking;
@@ -57,10 +58,10 @@ class BookingService {
     // Check if field exists and is active
     const field = await Field.findByPk(field_id);
     if (!field) {
-      throw new AppError(ResponseMessage.FIELD_NOT_FOUND, StatusCodes.NOT_FOUND);
+      throw new AppError(ResponseCode.FIELD_NOT_FOUND, StatusCodes.NOT_FOUND);
     }
     if (!field.is_active) {
-      throw new AppError(ResponseMessage.FIELD_NOT_ACTIVE, StatusCodes.BAD_REQUEST);
+      throw new AppError(ResponseCode.FIELD_NOT_ACTIVE, StatusCodes.BAD_REQUEST);
     }
 
     // Calculate duration in hours
@@ -69,13 +70,13 @@ class BookingService {
     const duration = (end - start) / (1000 * 60 * 60);
 
     if (duration <= 0) {
-      throw new AppError(ResponseMessage.END_TIME_ERROR, StatusCodes.BAD_REQUEST);
+      throw new AppError(ResponseCode.END_TIME_ERROR, StatusCodes.BAD_REQUEST);
     }
 
     // Check for double booking conflict
     const isConflict = await checkBookingConflict(field_id, booking_date, start_time, end_time);
     if (isConflict) {
-      throw new AppError(ResponseMessage.CONFLICT_BOOKING, StatusCodes.CONFLICT);
+      throw new AppError(ResponseCode.CONFLICT_BOOKING, StatusCodes.CONFLICT);
     }
 
     const total_price = field.price_per_hour * duration;
@@ -108,7 +109,7 @@ class BookingService {
         booking.id
       );
       if (isConflict) {
-        throw new AppError(ResponseMessage.CONFLICT_APPROVE, StatusCodes.CONFLICT);
+        throw new AppError(ResponseCode.CONFLICT_APPROVE, StatusCodes.CONFLICT);
       }
     }
 

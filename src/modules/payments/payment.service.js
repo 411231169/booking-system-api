@@ -1,3 +1,4 @@
+const { ResponseCode } = require('../../utils/responseEnums');
 const { StatusCodes } = require('http-status-codes');
 const { Payment, Booking, User } = require('../../models');
 const { getPagination, getPagingData } = require('../../utils/pagination');
@@ -40,7 +41,7 @@ class PaymentService {
     });
 
     if (!payment) {
-      throw new AppError(ResponseMessage.PAYMENT_NOT_FOUND, StatusCodes.NOT_FOUND);
+      throw new AppError(ResponseCode.PAYMENT_NOT_FOUND, StatusCodes.NOT_FOUND);
     }
     return payment;
   }
@@ -51,16 +52,16 @@ class PaymentService {
     // Verify booking
     const booking = await Booking.findByPk(booking_id);
     if (!booking) {
-      throw new AppError(ResponseMessage.BOOKING_NOT_FOUND, StatusCodes.NOT_FOUND);
+      throw new AppError(ResponseCode.BOOKING_NOT_FOUND, StatusCodes.NOT_FOUND);
     }
     if (booking.user_id !== userId) {
-      throw new AppError(ResponseMessage.PAY_OWN_BOOKING, StatusCodes.FORBIDDEN);
+      throw new AppError(ResponseCode.PAY_OWN_BOOKING, StatusCodes.FORBIDDEN);
     }
 
     // Check if payment already exists
     const existingPayment = await Payment.findOne({ where: { booking_id } });
     if (existingPayment) {
-      throw new AppError(ResponseMessage.PAYMENT_EXISTS, StatusCodes.BAD_REQUEST);
+      throw new AppError(ResponseCode.PAYMENT_EXISTS, StatusCodes.BAD_REQUEST);
     }
 
     const payment = await Payment.create({

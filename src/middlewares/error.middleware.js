@@ -1,18 +1,20 @@
 const { StatusCodes } = require('http-status-codes');
 const logger = require('../config/logger');
 const { sendGeneralError, sendValidationError } = require('../utils/response');
+const { ResponseCode } = require('../utils/responseEnums');
 
 class AppError extends Error {
-  constructor(message, statusCode) {
-    super(message);
+  constructor(responseCodeEnum, statusCode) {
+    super(responseCodeEnum && responseCodeEnum.message ? responseCodeEnum.message : responseCodeEnum);
     this.statusCode = statusCode;
+    this.responseCodeEnum = responseCodeEnum;
     this.isOperational = true;
     Error.captureStackTrace(this, this.constructor);
   }
 }
 
 const errorMiddleware = (err, req, res, next) => {
-  let { statusCode, message } = err;
+  let { statusCode, responseCodeEnum } = err;
   
   if (!statusCode) statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
   
@@ -26,25 +28,20 @@ const errorMiddleware = (err, req, res, next) => {
       field: e.path,
       message: e.message
     }));
-    return sendValidationError(res, 'Validation Error', formatErrors);
+    return sendValidationError(res, ResponseCode.VALIDATION_ERROR, formatErrors);
   } else if (err.name === 'JsonWebTokenError') {
     statusCode = StatusCodes.UNAUTHORIZED;
-    message = 'Invalid token';
+    responseCodeEnum = ResponseCode.TOKEN_INVALID;
   } else if (err.name === 'TokenExpiredError') {
     statusCode = StatusCodes.UNAUTHORIZED;
-    message = 'Token expired';
+    responseCodeEnum = ResponseCode.TOKEN_INVALID;
   }
 
-  const finalMessage = statusCode === StatusCodes.INTERNAL_SERVER_ERROR && process.env.NODE_ENV === 'production' ? 'Internal Server Error' : (message || 'Internal Server Error');
+  // Fallback to INTERNAL_SERVER_ERROR if no specific enum is provided
+  const finalResponseCode = responseCodeEnum || ResponseCode.INTERNAL_SERVER_ERROR;
   const errorsArray = [];
   
-  // Optional: Send stack trace in dev mode as an error detail
-  if (process.env.NODE_ENV === 'development' && err.stack) {
-    // We could push stack trace to errors array, but template expects field/message
-    // errorsArray.push({ field: 'stack', message: err.stack });
-  }
-
-  return sendGeneralError(res, statusCode, finalMessage, errorsArray);
+  return sendGeneralError(res, statusCode, finalResponseCode, errorsArray);
 };
 
 module.exports = {
