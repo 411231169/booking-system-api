@@ -1,11 +1,12 @@
+const { StatusCodes } = require('http-status-codes');
 const authService = require('./auth.service');
-const { sendSuccess } = require('../../utils/response');
+const { sendSuccessSingle, sendSuccessList } = require('../../utils/response');
 
 class AuthController {
   async register(req, res, next) {
     try {
       await authService.register(req.body);
-      return sendSuccess(res, 201, 'Register successful');
+      return sendSuccessSingle(res, StatusCodes.CREATED, ResponseMessage.REGISTER_SUCCESS);
     } catch (error) {
       next(error);
     }
@@ -15,7 +16,7 @@ class AuthController {
     try {
       const { email, password } = req.body;
       const data = await authService.login(email, password);
-      return sendSuccess(res, 200, 'Login successful', data);
+      return sendSuccessSingle(res, StatusCodes.OK, ResponseMessage.LOGIN_SUCCESS, data);
     } catch (error) {
       next(error);
     }
@@ -24,7 +25,7 @@ class AuthController {
   async getProfile(req, res, next) {
     try {
       const user = await authService.getProfile(req.user.id);
-      return sendSuccess(res, 200, 'Profile retrieved successfully', user);
+      return sendSuccessSingle(res, StatusCodes.OK, ResponseMessage.PROFILE_RETRIEVED, user);
     } catch (error) {
       next(error);
     }

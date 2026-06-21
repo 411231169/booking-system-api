@@ -1,11 +1,12 @@
+const { StatusCodes } = require('http-status-codes');
 const userService = require('./user.service');
-const { sendSuccess } = require('../../utils/response');
+const { sendSuccessSingle, sendSuccessList } = require('../../utils/response');
 
 class UserController {
   async getAllUsers(req, res, next) {
     try {
       const data = await userService.getAllUsers(req.query);
-      return sendSuccess(res, 200, 'Users retrieved successfully', data);
+      return sendSuccessList(res, StatusCodes.OK, ResponseMessage.USERS_RETRIEVED, data, null);
     } catch (error) {
       next(error);
     }
@@ -14,7 +15,7 @@ class UserController {
   async getUserById(req, res, next) {
     try {
       const data = await userService.getUserById(req.params.id);
-      return sendSuccess(res, 200, 'User retrieved successfully', data);
+      return sendSuccessSingle(res, StatusCodes.OK, ResponseMessage.USER_RETRIEVED, data);
     } catch (error) {
       next(error);
     }
